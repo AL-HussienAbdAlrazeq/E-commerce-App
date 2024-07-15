@@ -26,5 +26,9 @@ const categorySchema = new mongoose.Schema({
     versionKey:false
 })
 
+categorySchema.post('init' , (doc)=>{
+    doc.image = 'http://localhost:3000/uploads/categories/'+doc.image
+})
+
 
 export const Category = mongoose.model('Category' , categorySchema)

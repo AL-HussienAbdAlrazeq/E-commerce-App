@@ -15,15 +15,21 @@ const brandSchema = new mongoose.Schema({
         lowercase:true,
         required:true
     },
-    logo:String,
+    logo:{
+        type:String,
+        required:true
+    },
     createdBy:{
         type:Types.ObjectId,
-        ref:'User',
-        required:true
+        ref:'User'
     }
 },{
     timestamps:true,
     versionKey:false
+})
+
+brandSchema.post('init' , (doc)=>{
+    doc.logo = 'http://localhost:3000/uploads/brands/' + doc.logo
 })
 
 

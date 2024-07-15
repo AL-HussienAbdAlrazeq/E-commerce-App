@@ -21,7 +21,7 @@ const productSchema = new mongoose.Schema({
         minLength:5,
         maxLength:3000
     },
-    imgCover:String,
+    imageCover:String,
     images:[String],
     price:{
         type:Number,
@@ -71,5 +71,9 @@ const productSchema = new mongoose.Schema({
     versionKey:false
 })
 
+productSchema.post('init',(doc)=>{
+    doc.imageCover = 'http://localhost:3000/uploads/products/'+doc.imageCover
+    doc.images = doc.images.map(img=>'http://localhost:3000/uploads/products/'+img)
+})
 
 export const Product = mongoose.model('Product' , productSchema)
