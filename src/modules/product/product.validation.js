@@ -8,7 +8,7 @@ const addProductValidation = Joi.object({
         fieldname:Joi.string(),
         originalname:Joi.string(),
         encoding:Joi.string(),
-        mimetype:Joi.string().valid('imageCover/jpeg','imageCover/png','imageCover/gif','imageCover/jpg'),
+        mimetype:Joi.string().valid(),
         size:Joi.number().max(5242880),
         destination:Joi.string(),
         filename:Joi.string(),
@@ -18,7 +18,7 @@ const addProductValidation = Joi.object({
         fieldname:Joi.string(),
         originalname:Joi.string(),
         encoding:Joi.string(),
-        mimetype:Joi.string().valid('images/jpeg','images/png','images/gif','images/jpg'),
+        mimetype:Joi.string().valid(),
         size:Joi.number().max(5242880),
         destination:Joi.string(),
         filename:Joi.string(),
@@ -32,7 +32,8 @@ const addProductValidation = Joi.object({
     brand:Joi.string().hex().length(24).required(),
     subCategory:Joi.string().hex().length(24).required(),
     rateAverage:Joi.number().min(0).max(5).required(),
-    createdBy:Joi.string().hex().length(24).required()
+    rateCount:Joi.number().required(),
+    // createdBy:Joi.string().hex().length(24).required()
 
 })
 

@@ -3,13 +3,14 @@ import { catchError } from "../../middleware/catchError.js"
 import { AppError } from "../../utils/AppError.js"
 import { Product } from "../../../database/models/product.model.js"
 import { deleteOne } from "../handlers/handlers.js"
+import { ApiFeatures } from "../../utils/ApiFeatures.js"
 
 
 
 const addProduct = catchError(async(req,res,next)=>{
     req.body.slug =slugify(req.body.title) 
     req.body.imageCover = req.files.imageCover[0].filename
-    req.body.images = req.files.images.map(img=>img.filename)
+    req.body.images = req.files.images.map(img => img.filename)
     const product = new Product(req.body)
     await product.save()
     res.status(201).json({message:"Success",product})
@@ -18,9 +19,11 @@ const addProduct = catchError(async(req,res,next)=>{
   
 
 const getAllProducts= catchError(async(req,res,next)=>{
-    const products = await Product.find()
+
+    const apiFeatures = new ApiFeatures(Product.find() , req.query).pagination().fields().filter().sort().search()
+    const products = await apiFeatures.mongooseQuery
     if(products.length===0) return next(new AppError("Products Not Founded" , 404))
-    res.status(200).json({message:"Success",products})
+    res.status(200).json({message:"Success",page:apiFeatures.pageNumber ,products})
 })
 
 

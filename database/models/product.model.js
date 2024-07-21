@@ -68,12 +68,22 @@ const productSchema = new mongoose.Schema({
     
 },{
     timestamps:true,
-    versionKey:false
+    versionKey:false,
+    toJSON:{virtuals:true}
+})
+
+productSchema.virtual('Reviews',{
+    ref:'Review',
+    localField:'_id',
+    foreignField:'product'
+})
+productSchema.pre('findOne' , function(){
+    this.populate('Reviews')
 })
 
 productSchema.post('init',(doc)=>{
-    doc.imageCover = 'http://localhost:3000/uploads/products/'+doc.imageCover
-    doc.images = doc.images.map(img=>'http://localhost:3000/uploads/products/'+img)
+ if(doc.imageCover)  doc.imageCover = process.env.BASE_URL+'products/'+doc.imageCover
+ if(doc.images) doc.images = doc.images.map(img=>process.env.BASE_URL+'products/'+img)
 })
 
 export const Product = mongoose.model('Product' , productSchema)

@@ -1,4 +1,5 @@
 import multer from "multer";
+import path from "path"
 import { v4 as uuidv4 } from 'uuid'
 import { AppError } from "../utils/AppError.js";
 
@@ -8,7 +9,7 @@ export const fileUpload = (folderName)=>{
     destination:(req,file,cb)=>{
         cb(null,`uploads/${folderName}`)
     },filename:(req,file,cb)=>{
-        cb(null , uuidv4()+ '-' + file.originalname )
+        cb(null , uuidv4()+ '-' + path.extname(file.originalname) )
     }
    })
 
@@ -21,7 +22,7 @@ export const fileUpload = (folderName)=>{
    }
 
    const upload = multer({storage , fileFilter , limits:{
-    fileSize:2 * 1024 * 1024
+    fileSize:5 * 1024 * 1024
    }})
    return upload
 }

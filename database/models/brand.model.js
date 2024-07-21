@@ -29,7 +29,7 @@ const brandSchema = new mongoose.Schema({
 })
 
 brandSchema.post('init' , (doc)=>{
-    doc.logo = 'http://localhost:3000/uploads/brands/' + doc.logo
+  if(doc.logo)  doc.logo = process.env.BASE_URL+'brands/' + doc.logo
 })
 
 

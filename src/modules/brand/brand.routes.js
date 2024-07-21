@@ -3,20 +3,21 @@ import { addBrand, deleteBrand, getAllBrands, getBrand, updateBrand } from "./br
 import { uploadSingleFile } from "../../fileUpload/fileUpload.js"
 import { validate } from "../../middleware/validate.js"
 import { addBrandValidation, updateBrandValidation } from "./brand.validation.js"
+import { allowedTo, protectedRoutes } from "../../auth/auth.controller.js"
 
 
 const brandRouter = Router()
 
 brandRouter
 .route('/')
-.post(uploadSingleFile('logo' , 'brands'), validate(addBrandValidation) ,addBrand)
+.post(protectedRoutes , allowedTo('admin') , uploadSingleFile('logo' , 'brands'), validate(addBrandValidation) ,addBrand)
 .get(getAllBrands)
 
 brandRouter
 .route('/:id')
-.put(uploadSingleFile('logo' , 'brands'),validate(updateBrandValidation),updateBrand)
+.put(protectedRoutes , allowedTo('admin') ,uploadSingleFile('logo' , 'brands'),validate(updateBrandValidation),updateBrand)
 .get(getBrand)
-.delete(deleteBrand)
+.delete(protectedRoutes , allowedTo('admin') ,deleteBrand)
 
 
 

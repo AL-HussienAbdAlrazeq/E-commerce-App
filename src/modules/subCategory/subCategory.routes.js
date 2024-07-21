@@ -4,7 +4,7 @@ import { validate } from "../../middleware/validate.js"
 import { addSubCategoryValidation, updateSubCategoryValidation } from "./subCategory.validation.js"
 
 
-const subCategoryRouter = Router()
+const subCategoryRouter = Router({mergeParams:true})
 
 subCategoryRouter.route('/')
 .post( validate(addSubCategoryValidation),addSubCategory)

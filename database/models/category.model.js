@@ -13,8 +13,7 @@ const categorySchema = new mongoose.Schema({
     slug:{
         type:String,
         unique:[true , "Name is required"],
-        lowercase:true,
-        required:true
+        lowercase:true
     },
     image:String,
     createdBy:{
@@ -27,7 +26,7 @@ const categorySchema = new mongoose.Schema({
 })
 
 categorySchema.post('init' , (doc)=>{
-    doc.image = 'http://localhost:3000/uploads/categories/'+doc.image
+ if(doc.image)  doc.image = process.env.BASE_URL+'categories/'+doc.image
 })
 
 

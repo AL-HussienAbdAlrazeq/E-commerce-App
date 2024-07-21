@@ -3,6 +3,7 @@ import { catchError } from "../../middleware/catchError.js"
 import { AppError } from "../../utils/AppError.js"
 import { SubCategory } from "../../../database/models/subCategory.model.js"
 import { deleteOne } from "../handlers/handlers.js"
+import { ApiFeatures } from "../../utils/ApiFeatures.js"
 
 
 
@@ -16,9 +17,15 @@ const addSubCategory = catchError(async(req,res,next)=>{
 
 
 const getAllSubCategories = catchError(async(req,res,next)=>{
-    const subCategories = await SubCategory.find().populate('category')
+
+    let filterObj = {}
+    if(req.params.category) filterObj.category = req.params.category
+
+    const apiFeatures = new ApiFeatures(SubCategory.find(filterObj) , req.query).pagination().fields().filter().sort().search()
+    const subCategories = await apiFeatures.mongooseQuery
+
     if(subCategories.length===0) return next(new AppError("SubCategories Not Founded" , 404))
-    res.status(200).json({message:"Success",subCategories})
+    res.status(200).json({message:"Success",page:apiFeatures.pageNumber,subCategories})
 })
 
 
