@@ -28,6 +28,7 @@ const userSchema = new mongoose.Schema({
         enum:['admin','user'],
         default:'user'
     },
+    code:String,
     passwordChangedAt:Date,
     wishList:[{type:Types.ObjectId,ref:'Product'}],
     addresses:[{

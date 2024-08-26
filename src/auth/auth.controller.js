@@ -1,16 +1,20 @@
 
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
+import { v4 as uuidv4 } from 'uuid';
+
 
 import { User } from "../../database/models/user.model.js"
 import { AppError } from "../utils/AppError.js"
 import { catchError } from "../middleware/catchError.js"
+import { sendCode, sendEmail } from "../email/email.js"
 
 
 
 const signup= catchError(async (req,res)=>{
 
   const user = new User(req.body)
+  await sendEmail(req.body.email)
   await user.save()
   let token = jwt.sign({userId:user._id , role:user.role} , process.env.SECRET_KEY )
   res.status(201).json({message:"success" , token}) 
@@ -86,6 +90,47 @@ const allowedTo=(...roles)=>{
  })
 }
 
+
+
+const verifyEmail = catchError(async(req,res,next)=>{
+    jwt.verify(req.params.token , process.env.SECRET_KEY_EMAIL ,async (error , payload)=>{ 
+
+      if(error) return next(new AppError(error , 409))
+
+      await User.findOneAndUpdate({email:payload.email},{confirmEmail:true})
+      res.json({message:"Success" ,email:payload.email})
+
+    })
+})
+
+
+
+const forgetPassword = catchError(async (req,res,next)=>{
+
+  const {email} = req.body
+  const user = await User.findOne({email:email})
+  if(!user) return next(new AppError(`User not exist` , 404))
+  const resetCode = Math.floor(10000 + Math.random() * 90000).toString()
+  sendCode(req.body.email , `<h1> Your code is ${resetCode}</h1>`)
+  await User.updateOne({email} , {code:resetCode})
+  res.status(200).json({message:"Done"})
+
+})
+
+
+
+const resetPassword = catchError(async (req,res,next)=>{
+  const {email , code , password} = req.body 
+  const user  = await User.findOne({email:email})
+  if(!user) return next(new AppError(`User not exist` , 404))
+  if(user.code !== code || code == ""){
+    return next(new AppError(`Code is not correct` , 404))
+  }
+  const hashPassword = bcrypt.hashSync(password , 10)
+  const passwordUpdate =  await User.updateOne({email} , {password:hashPassword , code:"" , passwordChangedAt:Date.now()})
+  res.status(200).json({message:"Done" })
+})
+
  
 
 
@@ -94,5 +139,8 @@ export{
     signin,
     changeUserPassword,
     protectedRoutes,
-    allowedTo
+    allowedTo,
+    verifyEmail,
+    forgetPassword,
+    resetPassword
 }

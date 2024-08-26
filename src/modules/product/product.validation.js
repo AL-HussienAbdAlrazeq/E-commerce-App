@@ -2,7 +2,7 @@ import Joi from "joi"
 
 
 const addProductValidation = Joi.object({
-    title:Joi.string().min(5).max(1000).required(),
+    title:Joi.string().min(2).max(1000).required(),
     description:Joi.string().min(5).max(5000).required(),
     imageCover:Joi.array().items(Joi.object({
         fieldname:Joi.string(),
@@ -25,15 +25,16 @@ const addProductValidation = Joi.object({
         path:Joi.string(),
     })).required(),
     price:Joi.number().required(),
-    priceAfterDiscount:Joi.number().required(),
+    // priceAfterDiscount:Joi.number(),
+    discount:Joi.number().min(0).max(100),
     sold:Joi.number().required(),
     stock:Joi.number().required(),
     category:Joi.string().hex().length(24).required(),
     brand:Joi.string().hex().length(24).required(),
+    createdBy:Joi.string().hex().length(24),
     subCategory:Joi.string().hex().length(24).required(),
-    rateAverage:Joi.number().min(0).max(5).required(),
-    rateCount:Joi.number().required(),
-    // createdBy:Joi.string().hex().length(24).required()
+    rateAverage:Joi.number().min(0).max(5),
+    rateCount:Joi.number(),
 
 })
 
@@ -63,6 +64,7 @@ const updateProductValidation = Joi.object({
     })),
     price:Joi.number(),
     priceAfterDiscount:Joi.number(),
+    discount:Joi.number().min(0).max(100),
     sold:Joi.number(),
     stock:Joi.number(),
     category:Joi.string().hex().length(24),

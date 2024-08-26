@@ -43,7 +43,6 @@ const updateUser = catchError(async(req,res,next)=>{
 })
  
 
-
 const deleteUser = deleteOne(User)
 
 

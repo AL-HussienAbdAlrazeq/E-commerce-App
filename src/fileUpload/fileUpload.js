@@ -1,15 +1,22 @@
 import multer from "multer";
+import fs from "fs"
 import path from "path"
 import { v4 as uuidv4 } from 'uuid'
 import { AppError } from "../utils/AppError.js";
+
+
 
 export const fileUpload = (folderName)=>{
 
    const storage = multer.diskStorage({
     destination:(req,file,cb)=>{
+        let fullPath = path.resolve(`uploads/${folderName}`)
+        if(!fs.existsSync(fullPath)){
+            fs.mkdirSync(fullPath,{recursive:true})
+        }
         cb(null,`uploads/${folderName}`)
     },filename:(req,file,cb)=>{
-        cb(null , uuidv4()+ '-' + path.extname(file.originalname) )
+        cb(null , uuidv4()+ '-' + file.originalname )
     }
    })
 
