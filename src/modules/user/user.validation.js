@@ -7,6 +7,7 @@ const addUserValidation =  Joi.object({
     name: Joi.string().min(2).max(40).required(),
     email:Joi.string().required(),
     password:Joi.string().pattern(/^[A-Z][A-Za-z0-9]{8,40}$/).message('InValid Password'),
+    role: Joi.string()
   })
 
   const updateUserValidation =  Joi.object({

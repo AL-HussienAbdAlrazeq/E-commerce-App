@@ -5,7 +5,6 @@ const productSchema = new mongoose.Schema(
     title: {
       type: String,
       unique: [true, "Name is required"],
-      trim: true,
       required: true,
       minLength: [2, "Too Short Category Name"],
     },

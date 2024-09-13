@@ -4,8 +4,10 @@ import { Order } from "../../../database/models/order.model.js";
 import { Product } from "../../../database/models/product.model.js";
 import { catchError } from "../../middleware/catchError.js";
 import { AppError } from "../../utils/AppError.js";
+import "dotenv/config";
+
 const stripe = new Stripe(
-  "sk_test_51Pi4NaGXY8JEhcL3dNqvQyBT0i6wqpsBJVH8DnR00vaFW8CYNR9AMtcHNN4oeXMGpGvz6On6NIELmz2v2XvrArXo00NWsoaJrF"
+  process.env.SECRET_PAYMENT_KEY 
 );
 
 const createCashOrder = catchError(async (req, res, next) => {
@@ -14,27 +16,40 @@ const createCashOrder = catchError(async (req, res, next) => {
   if (!cart) return next(new AppError("Cart not found", 404));
 
   // Total order price
-  let totalOrderPrice = cart.totalPriceAfterDiscount || cart.totalCartPrice;
+  // let totalOrderPrice = cart.totalPriceAfterDiscount || cart.totalCartPrice;
+  let totalOrderPrice = cart.totalPriceAfterDiscount
+    ? cart.totalPriceAfterDiscount
+    : cart.totalCartPrice;
 
   // Create Order
   let order = new Order({
     user: req.user._id,
     orderItems: cart.cartItems,
-    shippingAddress: req.body,
+    shippingAddress: req.body.shippingAddress,
     totalOrderPrice,
   });
-  await order.save();
 
   // increment Sold decrement Stock
-  let options = cart.cartItems.map((pro) => {
-    return {
-      updateOne: {
-        filter: { _id: pro.product },
-        update: { $inc: { sold: pro.quantity, stock: -pro.quantity } },
-      },
-    };
-  });
-  await Product.bulkWrite(options);
+  if (order) {
+    let options = cart.cartItems.map((pro) => {
+      return {
+        updateOne: {
+          filter: { _id: pro.product },
+          update: {
+            $inc: {
+              sold: pro.quantity,
+              stock: -pro.quantity,
+              quantity: -pro.quantity,
+            },
+          },
+        },
+      };
+    });
+    await Product.bulkWrite(options);
+    await order.save();
+  }else{
+    return next(new AppError("Error Occur") , 409)
+  }
 
   // clear user cart
   await Cart.findByIdAndDelete(cart._id);

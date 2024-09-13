@@ -4,14 +4,10 @@ export class ApiFeatures {
     this.searchQuery = searchQuery;
   }
   pagination() {
-   
-
     let pageNumber = this.searchQuery.page * 1 || 1;
 
-
     if (this.searchQuery.page < 1) pageNumber = 1;
-    let limit = this.searchQuery.limit * 1 || 5;
- 
+    let limit = this.searchQuery.limit * 1;
 
     let skip = (pageNumber - 1) * limit;
     this.pageNumber = pageNumber;
@@ -26,7 +22,7 @@ export class ApiFeatures {
 
     filterObj = filterObj.replace(/(gt|gte|lt|lte)/g, (value) => `$${value}`);
     filterObj = JSON.parse(filterObj);
-    let excludeFields = ["page", "sort", "search", "fields",'limit'];
+    let excludeFields = ["page", "sort", "search", "fields", "limit"];
     excludeFields.forEach((val) => {
       delete filterObj[val];
     });

@@ -1,4 +1,4 @@
-
+import QRCode from 'qrcode'
 import { catchError } from "../../middleware/catchError.js"
 import { AppError } from "../../utils/AppError.js"
 import { ApiFeatures } from "../../utils/ApiFeatures.js"
@@ -32,8 +32,9 @@ const getAllCoupons= catchError(async(req,res,next)=>{
 
 const getCoupon = catchError(async(req,res,next)=>{
     const coupon = await Coupon.findById(req.params.id)
+    let url =await QRCode.toDataURL(coupon.code)
     coupon || next(new AppError("Coupon Not Found" , 404))
-   !coupon || res.status(200).json({message:"Success",coupon})
+   !coupon || res.status(200).json({message:"Success",coupon , url})
 })
 
 

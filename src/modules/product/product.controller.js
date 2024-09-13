@@ -104,13 +104,16 @@ const addProductCloud = catchError(async (req, res, next) => {
 });
 
 const getAllProducts = catchError(async (req, res, next) => {
-  const apiFeatures = new ApiFeatures(Product.find(), req.query)
+  const apiFeatures = new ApiFeatures(Product.find().populate('category').populate('subCategory').populate('brand'), req.query)
     .pagination()
     .fields()
     .filter()
     .sort()
     .search();
   const products = await apiFeatures.mongooseQuery;
+  products.map((ele) => {
+    ele.createdBy = undefined;
+  });
   if (products.length === 0)
     return next(new AppError("Products Not Founded", 404));
   res
@@ -119,7 +122,7 @@ const getAllProducts = catchError(async (req, res, next) => {
 });
 
 const getProduct = catchError(async (req, res, next) => {
-  const product = await Product.findById(req.params.id);
+  const product = await Product.findById(req.params.id).populate('category').populate('subCategory').populate('brand');
   product || next(new AppError("Product Not Found", 404));
   !product || res.status(200).json({ message: "Success", product });
 });

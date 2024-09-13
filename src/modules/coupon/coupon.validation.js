@@ -3,7 +3,7 @@ import Joi from "joi"
 
 const addCouponValidation = Joi.object({
     code:Joi.string().required(),
-    discount:Joi.number().required(),
+    discount:Joi.number().min(0).required(),
     expires:Joi.date().required()
 })
 

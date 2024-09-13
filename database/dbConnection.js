@@ -1,7 +1,9 @@
 import mongoose from "mongoose";
+import "dotenv/config";
 
 
-export const dbConnection = mongoose.connect('mongodb://localhost:27017/E-commerce_App').
+
+export const dbConnection = mongoose.connect(process.env.DB_ONLINE_CONNECTION).
 then(()=>{
-    console.log("The DataBase Connection Was Successful")
+    console.log("The DataBase Connection Was Successfully")
 })
