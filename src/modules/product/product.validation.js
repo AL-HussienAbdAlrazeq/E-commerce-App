@@ -40,7 +40,7 @@ const addProductValidation = Joi.object({
 
 
 const updateProductValidation = Joi.object({
-    title:Joi.string().min(5).max(1000).required(),
+    title:Joi.string().min(5).max(1000),
     description:Joi.string().min(5).max(5000),
     imageCover:Joi.array().items(Joi.object({
         fieldname:Joi.string(),
